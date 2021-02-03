@@ -1,0 +1,53 @@
+## Generated mta.yaml based on template version 0.4.0
+## appName = cap-geo
+## language=java; multiTenant=false
+## approuter=
+_schema-version: '3.1'
+ID: approuter
+version: 1.0.0
+description: "approuter"
+parameters:
+  enable-parallel-deployments: true
+
+
+modules:
+  - name: cf-approuter
+    type: nodejs
+    path: app
+    parameters:
+      memory: 256M
+    requires:
+      - name: cf-uaa
+      - name: cf-destination
+      - name: cf-connectivity
+    provides:
+      - name: app-url
+        properties:
+          url: '${default-url}'
+
+
+resources:
+ - name: cf-connectivity
+   type: org.cloudfoundry.managed-service
+   parameters:
+     service: connectivity
+     service-plan: lite
+   properties:
+     service-name: ${service-name}
+
+ - name: cf-uaa
+   type: org.cloudfoundry.managed-service
+   parameters:
+     path: ./xs-security.json
+     service: xsuaa
+     service-plan: application
+   properties:
+     service-name: ${service-name}
+
+ - name: cf-destination
+   type: org.cloudfoundry.managed-service
+   parameters:
+     service: destination
+     service-plan: lite
+   properties:
+     service-name: ${service-name}
